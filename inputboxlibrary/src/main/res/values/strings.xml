@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">InputBoxLibrary</string>
+    <string name="inputbox_send">Send</string>
+</resources>
