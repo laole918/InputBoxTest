@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 
 /**
  * Created by laole918 on 2016/1/9.
@@ -25,13 +27,13 @@ public class InputBoxUtils {
     private static InputMethodManager imm;
     private static ViewGroup decorView;//activity的根View
     private static ViewGroup rootView;// mSharedView 的 根View
+    private static ViewGroup anchorOnView;
     private static InputBoxView mInputBoxView;
 
-    private static int mInputBoxViewHeight = 0;
+    private static int anchorY = 0;
     private static int mKeyBoardHeight = 0;
     private static int mVisibleHeight = 0;
     private static boolean mIsKeyboardShow = false;
-//    private static boolean mIsInputBoxShow = false;
 
     public static void register(Activity context) {
         if (context == null) return;
@@ -49,7 +51,7 @@ public class InputBoxUtils {
 
     private static void init() {
         imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        decorView.getViewTreeObserver().addOnGlobalLayoutListener(listener);
+        decorView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
     }
 
     private static void initViews() {
@@ -59,35 +61,54 @@ public class InputBoxUtils {
         rootView.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         ));
+        rootView.setClickable(true);
     }
 
     private static void initInputBoxView() {
         mInputBoxView = new InputBoxView(mContext);
-        int w = View.MeasureSpec.makeMeasureSpec(0,
-                View.MeasureSpec.UNSPECIFIED);
-        int h = View.MeasureSpec.makeMeasureSpec(0,
-                View.MeasureSpec.UNSPECIFIED);
-        mInputBoxView.measure(w, h);
-        mInputBoxViewHeight = mInputBoxView.getMeasuredHeight();
-//        params.gravity = Gravity.BOTTOM;
+        params.gravity = Gravity.BOTTOM;
         mInputBoxView.setLayoutParams(params);
+        mInputBoxView.getEditText().setOnTouchListener(mOnTouchListener);
+    }
+
+    public static InputBoxView getInputBoxView() {
+        return mInputBoxView;
     }
 
     public static void unregister() {
         if (mContext == null) return;
-        decorView.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+        decorView.getViewTreeObserver().removeGlobalOnLayoutListener(mOnGlobalLayoutListener);
         mContext = null;
     }
 
     public static void show() {
         if (mContext == null) {
-            throw new IllegalArgumentException("mContext=null没有初始化");
+            throw new IllegalArgumentException("mContext=null没有初始化，请调用register方法");
         }
+        setCancelable(true);
         if (!isShowing()) {
             onAttached();
             showSoftInput();
-//            mInputBoxView.show();
         }
+    }
+
+    public static void showAnchor(View anchor, ListView listView) {
+        anchorOnView = listView;
+        showAnchor(anchor);
+    }
+
+    public static void showAnchor(View anchor, ScrollView scrollView) {
+        anchorOnView = scrollView;
+        showAnchor(anchor);
+    }
+
+    private static void showAnchor(View anchor) {
+        Rect r = new Rect();
+        int[] location = new int[2];
+        anchor.getLocalVisibleRect(r);
+        anchor.getLocationInWindow(location);
+        anchorY = location[1] + r.bottom;
+        show();
     }
 
     private static void onAttached() {
@@ -102,16 +123,12 @@ public class InputBoxUtils {
     }
 
     public static void dismiss() {
-        if (mIsKeyboardShow) {
-//            mInputBoxView.dismiss();
-//            hideSoftInput();
-            return;
-        }
+        hideSoftInput();
         rootView.removeView(mInputBoxView);
         decorView.removeView(rootView);
     }
 
-    public static void setCancelable(boolean isCancelable) {
+    private static void setCancelable(boolean isCancelable) {
         if (isCancelable) {
             rootView.setOnTouchListener(onCancelableTouchListener);
         } else {
@@ -120,25 +137,55 @@ public class InputBoxUtils {
     }
 
     private static void onKeyboardShow() {
-        params.gravity = Gravity.TOP;
-        params.topMargin = mKeyBoardHeight;
+        params.gravity = Gravity.BOTTOM;
+        params.bottomMargin = mKeyBoardHeight;
         mInputBoxView.setLayoutParams(params);
-        System.out.println("onKeyboardShow" + params.topMargin);
+        mInputBoxView.post(new Runnable() {
+            @Override
+            public void run() {
+                mInputBoxView.requestFocus();
+            }
+        });
+        if(anchorOnView instanceof ListView) {
+            ListView listView = (ListView) anchorOnView;
+            listView.smoothScrollBy(anchorY - mVisibleHeight + mInputBoxView.getHeight(), 0);
+        } else if(anchorOnView instanceof ScrollView) {
+            ScrollView scrollView = (ScrollView) anchorOnView;
+            scrollView.smoothScrollBy(0, anchorY - mVisibleHeight + mInputBoxView.getHeight());
+        }
     }
 
     private static void onKeyboardHide() {
         params.gravity = Gravity.BOTTOM;
-        params.topMargin = 0;
-//        mInputBoxView.setLayoutParams(params);
-//        System.out.println("onKeyboardHide");
+        params.bottomMargin = 0;
+        mInputBoxView.setLayoutParams(params);
+        if(anchorOnView != null) {
+            anchorOnView = null;
+            anchorY = 0;
+        }
+    }
+
+    private static void onClickEditText() {
+        params.gravity = Gravity.BOTTOM;
+        params.bottomMargin = mKeyBoardHeight;
+        mInputBoxView.setLayoutParams(params);
+        showSoftInput();
     }
 
     private static void showSoftInput() {
-        imm.showSoftInput(decorView, InputMethodManager.SHOW_FORCED);
+        if (!mIsKeyboardShow) {
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     private static void hideSoftInput() {
-        imm.hideSoftInputFromWindow(decorView.getWindowToken(), 0);
+        if (mIsKeyboardShow) {
+            if (mContext.getCurrentFocus() != null && mContext.getCurrentFocus().getWindowToken() != null) {
+                imm.hideSoftInputFromWindow(mContext.getCurrentFocus().getWindowToken(), 0);
+            } else {
+                imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
     }
 
     private static void getKeyboardHeight() {
@@ -161,15 +208,11 @@ public class InputBoxUtils {
             onKeyboardShow();
         } else {
             mIsKeyboardShow = false;
-//            mVisibleHeight = 0;
-            mKeyBoardHeight = 0;
+            mVisibleHeight = 0;
             onKeyboardHide();
         }
     }
 
-    /**
-     * Called when the user touch on black overlay in order to dismiss the dialog
-     */
     private static final View.OnTouchListener onCancelableTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -183,10 +226,21 @@ public class InputBoxUtils {
         }
     };
 
-    private static final ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener() {
+    private static final ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
             getKeyboardHeight();
+        }
+    };
+
+    private static View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            int action = motionEvent.getAction();
+            if (action == MotionEvent.ACTION_UP) {
+                onClickEditText();
+            }
+            return true;
         }
     };
 

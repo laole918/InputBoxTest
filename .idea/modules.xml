@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/InputBoxTest.iml" filepath="$PROJECT_DIR$/InputBoxTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/InputBoxTest.iml" filepath="$PROJECT_DIR$/InputBoxTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/inputboxlibrary/inputboxlibrary.iml" filepath="$PROJECT_DIR$/inputboxlibrary/inputboxlibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/inputboxlibrary/inputboxlibrary.iml" filepath="$PROJECT_DIR$/inputboxlibrary/inputboxlibrary.iml" />
     </modules>
   </component>
