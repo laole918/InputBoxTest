@@ -34,6 +34,7 @@ public class InputBoxUtils {
     private static int mKeyBoardHeight = 0;
     private static int mVisibleHeight = 0;
     private static boolean mIsKeyboardShow = false;
+    private static boolean mInputBoxViewShow = false;
 
     public static void register(Activity context) {
         if (context == null) return;
@@ -85,11 +86,12 @@ public class InputBoxUtils {
         if (mContext == null) {
             throw new IllegalArgumentException("mContext=null没有初始化，请调用register方法");
         }
+        mInputBoxViewShow = true;
         setCancelable(true);
         if (!isShowing()) {
             onAttached();
-            showSoftInput();
         }
+        showSoftInput();
     }
 
     public static void showAnchor(View anchor, ListView listView) {
@@ -123,6 +125,7 @@ public class InputBoxUtils {
     }
 
     public static void dismiss() {
+        mInputBoxViewShow = false;
         hideSoftInput();
         rootView.removeView(mInputBoxView);
         decorView.removeView(rootView);
@@ -205,11 +208,15 @@ public class InputBoxUtils {
         if (mVisibleHeight < screenHeight) {
             mIsKeyboardShow = true;
             mKeyBoardHeight = screenHeight - mVisibleHeight;
-            onKeyboardShow();
+            if(mInputBoxViewShow) {
+                onKeyboardShow();
+            }
         } else {
             mIsKeyboardShow = false;
             mVisibleHeight = 0;
-            onKeyboardHide();
+            if(mInputBoxViewShow) {
+                onKeyboardHide();
+            }
         }
     }
 
