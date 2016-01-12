@@ -1,5 +1,6 @@
 package com.laole918.inputboxtest;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -7,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.laole918.inputboxlibrary.InputBoxUtils;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,13 @@ public class ListViewActivity extends BaseActivity implements AdapterView.OnItem
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listview);
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+
+        tintManager.setTintColor(Color.parseColor("#999000FF"));
+        tintManager.setNavigationBarTintColor(Color.parseColor("#ffFF4081"));
+
         listView = (ListView) findViewById(R.id.listView);
         ArrayAdapter<String> adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, getData());
         listView.setAdapter(adapter);

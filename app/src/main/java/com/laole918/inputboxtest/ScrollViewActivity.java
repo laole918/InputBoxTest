@@ -1,5 +1,6 @@
 package com.laole918.inputboxtest;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -7,6 +8,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.laole918.inputboxlibrary.InputBoxUtils;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,13 @@ public class ScrollViewActivity extends BaseActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scrollview);
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setNavigationBarTintEnabled(true);
+
+        tintManager.setTintColor(Color.parseColor("#999000FF"));
+        tintManager.setNavigationBarTintColor(Color.parseColor("#ffFF4081"));
+
         scrollView = (ScrollView) findViewById(R.id.scrollview);
         container = (LinearLayout) findViewById(R.id.container);
         List<String> data = getData();
