@@ -6,11 +6,5 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:windowSoftInputMode">stateHidden|adjustPan</item>
     </style>
-   <!-- <style name="aaa" parent="android:Theme.DeviceDefault.NoActionBar.TranslucentDecor" />-->
-    <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light">
-        <item name="android:fitsSystemWindows">false</item>
-        <item name="android:clipToPadding">true</item>
-        <item name="actionBarSize">@dimen/action_bar_default_height</item>
-    </style>
 
 </resources>
