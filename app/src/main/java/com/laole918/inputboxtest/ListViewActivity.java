@@ -46,13 +46,13 @@ public class ListViewActivity extends BaseActivity implements AdapterView.OnItem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        InputBoxUtils.unregister();
+        InputBoxUtils.unregister(this);
     }
 
     @Override
     public void onBackPressed() {
-        if(InputBoxUtils.isShowing()) {
-            InputBoxUtils.dismiss();
+        if(InputBoxUtils.isShowing(this)) {
+            InputBoxUtils.dismiss(this);
             return;
         }
         super.onBackPressed();
@@ -60,6 +60,6 @@ public class ListViewActivity extends BaseActivity implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        InputBoxUtils.showAnchor(view, listView);
+        InputBoxUtils.show(this, view, 0);
     }
 }

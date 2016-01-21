@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">InputBoxLibrary</string>
-    <string name="inputbox_send">发送</string>
+    <string name="s_send_btn">Send</string>
+    <string name="s_ok_btn">OK</string>
 </resources>

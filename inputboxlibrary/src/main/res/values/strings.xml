@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">InputBoxLibrary</string>
-    <string name="inputbox_send">Send</string>
+    <string name="s_send_btn">发送</string>
+    <string name="s_ok_btn">确定</string>
 </resources>

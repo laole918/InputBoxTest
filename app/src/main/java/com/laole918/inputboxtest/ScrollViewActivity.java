@@ -53,13 +53,13 @@ public class ScrollViewActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        InputBoxUtils.unregister();
+        InputBoxUtils.unregister(this);
     }
 
     @Override
     public void onBackPressed() {
-        if(InputBoxUtils.isShowing()) {
-            InputBoxUtils.dismiss();
+        if(InputBoxUtils.isShowing(this)) {
+            InputBoxUtils.dismiss(this);
             return;
         }
         super.onBackPressed();
@@ -67,6 +67,6 @@ public class ScrollViewActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        InputBoxUtils.showAnchor(view, scrollView);
+        InputBoxUtils.show(this, view, 100);
     }
 }

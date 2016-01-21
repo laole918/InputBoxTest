@@ -32,13 +32,13 @@ public class NormalActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        InputBoxUtils.unregister();
+        InputBoxUtils.unregister(this);
     }
 
     @Override
     public void onBackPressed() {
-        if(InputBoxUtils.isShowing()) {
-            InputBoxUtils.dismiss();
+        if(InputBoxUtils.isShowing(this)) {
+            InputBoxUtils.dismiss(this);
             return;
         }
         super.onBackPressed();
@@ -47,7 +47,7 @@ public class NormalActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if(v.equals(show)) {
-            InputBoxUtils.show();
+            InputBoxUtils.show(this, v, 100);
         }
     }
 }
